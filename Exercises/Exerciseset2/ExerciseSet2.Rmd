@@ -34,6 +34,11 @@ Let's now see the exercise.
 
 For this exercise we will use the Futures' daily returns  to develop what is considered to be a *"classic" hedge fund trading strategy*, a **futures trend following strategy**. There is a lot written about this, so it is worth doing some online search about "futures trend following", or "Managed Futures", or "Commodity Trading Advisors (CTA)". There is about **[$300 billion](http://www.barclayhedge.com/research/indices/cta/Money_Under_Management.html)** invested on this strategy today, and is considered to be one of the **oldest hedge fund strategies**. Some example links are:
 
+
+```
+
+```
+
 * [A fascinating report on 2 centuries of trend following from the CFM hedge - a $6 billion fund](https://www.trendfollowing.com/whitepaper/Two_Centuries_Trend_Following.pdf)
 * [Another fascinating report on 1 century of trend following investing from AQR - a $130 billion fund](https://www.aqr.com/library/aqr-publications/a-century-of-evidence-on-trend-following-investing)
 * [Wikipedia on CTAs](https://en.wikipedia.org/wiki/Commodity_trading_advisor)
@@ -166,6 +171,70 @@ print(m1,'chart')
 <br>
 <br>
 <br>
+
+1. You need at least 6 components to explain at least 50% of the variance (52.29%)
+
+2. The highest weight on component 1 is 0.93 
+
+3. Component 1 are bonds, Component 2 are FX, Component 3 and 4 are market indices Component 5 are futures Component 6 are oil component 7 are metals Component 8 are grain Component 9 are precious metals and component 10 are indices. 
+
+4. 
+
+Pre-Crisis Data
+
+```{r echo=TRUE, eval=TRUE, comment=NA, warning=FALSE,error=FALSE, message=FALSE, prompt=FALSE, tidy=TRUE}
+precrisis_data = futures_data[as.Date(rownames(futures_data)) > "2002-11-02" & as.Date(rownames(futures_data)) < "2007-10-01", ]
+Variance_Explained_Table_results<-PCA(precrisis_data, graph=FALSE)
+Variance_Explained_Table<-cbind(paste("component",1:ncol(precrisis_data),sep=" "),Variance_Explained_Table_results$eig)
+Variance_Explained_Table<-as.data.frame(Variance_Explained_Table)
+colnames(Variance_Explained_Table)<-c("Component","Eigenvalue", "Percentage_of_explained_variance", "Cumulative_percentage_of_explained_variance")
+```
+
+```{r echo=FALSE, comment=NA, warning=FALSE, message=FALSE, results='asis'}
+show_data = data.frame(Variance_Explained_Table)
+m1<-gvisTable(show_data,options=list(width=1920, height=min(400,27*(nrow(show_data)+1)),allowHTML=TRUE,page='disable'),formats=list(Eigenvalue="#.##",Percentage_of_explained_variance="#.##",Cumulative_percentage_of_explained_variance="#.##"))
+print(m1,'chart')
+```
+```{r echo=TRUE, eval=TRUE, comment=NA, warning=FALSE,error=FALSE, message=FALSE, prompt=FALSE, tidy=TRUE}
+
+eigenvalues  <- Variance_Explained_Table[,2]
+```
+
+```{r Fig2, echo=FALSE, comment=NA, results='asis', message=FALSE, fig.align='center', fig=TRUE}
+df<- cbind(as.data.frame(eigenvalues), c(1:length(eigenvalues)), rep(1, length(eigenvalues)))
+colnames(df) <- c("eigenvalues", "components", "abline")
+Line         <- gvisLineChart(as.data.frame(df), xvar="components", yvar=c("eigenvalues","abline"), options=list(title='Screen plot', legend="right", width=900, height=600, hAxis="{title:'Number of Components', titleTextStyle:{color:'black'}}", vAxes="[{title:'Eigenvalues'}]",  series="[{color:'green',pointSize:3, targetAxisIndex: 0}]"))
+print(Line, 'chart')
+```
+
+Crisis data:
+
+```{r echo=TRUE, eval=TRUE, comment=NA, warning=FALSE,error=FALSE, message=FALSE, prompt=FALSE, tidy=TRUE}
+crisis_data = futures_data[as.Date(rownames(futures_data)) > "2007-10-01" & as.Date(rownames(futures_data)) < "2009-03-01", ]
+Variance_Explained_Table_results<-PCA(crisis_data, graph=FALSE)
+Variance_Explained_Table<-cbind(paste("component",1:ncol(crisis_data),sep=" "),Variance_Explained_Table_results$eig)
+Variance_Explained_Table<-as.data.frame(Variance_Explained_Table)
+colnames(Variance_Explained_Table)<-c("Component","Eigenvalue", "Percentage_of_explained_variance", "Cumulative_percentage_of_explained_variance")
+```
+
+```{r echo=FALSE, comment=NA, warning=FALSE, message=FALSE, results='asis'}
+show_data = data.frame(Variance_Explained_Table)
+m1<-gvisTable(show_data,options=list(width=1920, height=min(400,27*(nrow(show_data)+1)),allowHTML=TRUE,page='disable'),formats=list(Eigenvalue="#.##",Percentage_of_explained_variance="#.##",Cumulative_percentage_of_explained_variance="#.##"))
+print(m1,'chart')
+```
+```{r echo=TRUE, eval=TRUE, comment=NA, warning=FALSE,error=FALSE, message=FALSE, prompt=FALSE, tidy=TRUE}
+
+eigenvalues  <- Variance_Explained_Table[,2]
+```
+
+```{r Fig3, echo=FALSE, comment=NA, results='asis', message=FALSE, fig.align='center', fig=TRUE}
+df<- cbind(as.data.frame(eigenvalues), c(1:length(eigenvalues)), rep(1, length(eigenvalues)))
+colnames(df) <- c("eigenvalues", "components", "abline")
+Line         <- gvisLineChart(as.data.frame(df), xvar="components", yvar=c("eigenvalues","abline"), options=list(title='Screen plot', legend="right", width=900, height=600, hAxis="{title:'Number of Components', titleTextStyle:{color:'black'}}", vAxes="[{title:'Eigenvalues'}]",  series="[{color:'green',pointSize:3, targetAxisIndex: 0}]"))
+print(Line, 'chart')
+```
+
+
 <br>
 
 
